@@ -1,7 +1,13 @@
 const API_HOST = import.meta.env.VITE_API_HOST || "";
+const localApiBase = "http://127.0.0.1:5000/api";
+const vercelServicesApiBase = "/_/backend/api";
 const API_BASE =
   import.meta.env.VITE_API_BASE ||
-  (API_HOST ? `https://${API_HOST.replace(/^https?:\/\//, "").replace(/\/$/, "")}/api` : "http://127.0.0.1:5000/api");
+  (API_HOST
+    ? `https://${API_HOST.replace(/^https?:\/\//, "").replace(/\/$/, "")}/api`
+    : window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+      ? localApiBase
+      : vercelServicesApiBase);
 
 export function getToken() {
   return localStorage.getItem("companyops_token") || "";
