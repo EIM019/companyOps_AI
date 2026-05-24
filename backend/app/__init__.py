@@ -8,6 +8,21 @@ from .db import close_db, init_db
 from .routes import api
 
 
+def frontend_origins():
+    origins = {
+        "http://127.0.0.1:5173",
+        "http://localhost:5173",
+    }
+    configured_origins = os.environ.get("FRONTEND_ORIGINS") or os.environ.get("FRONTEND_ORIGIN", "")
+    origins.update(origin.strip().rstrip("/") for origin in configured_origins.split(",") if origin.strip())
+
+    frontend_host = os.environ.get("FRONTEND_HOST", "").strip().rstrip("/")
+    if frontend_host:
+        origins.add(frontend_host if frontend_host.startswith("http") else f"https://{frontend_host}")
+
+    return sorted(origins)
+
+
 def create_app(test_config=None):
     load_dotenv()
     app = Flask(__name__, instance_relative_config=True)
@@ -29,7 +44,7 @@ def create_app(test_config=None):
         app.config.update(test_config)
 
     os.makedirs(app.instance_path, exist_ok=True)
-    CORS(app, origins=[os.environ.get("FRONTEND_ORIGIN", "http://127.0.0.1:5173")])
+    CORS(app, origins=frontend_origins())
 
     app.teardown_appcontext(close_db)
     app.register_blueprint(api, url_prefix="/api")

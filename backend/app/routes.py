@@ -1,4 +1,5 @@
 import json
+import os
 import secrets
 import urllib.parse
 import urllib.request
@@ -375,7 +376,8 @@ def google_calendar_callback():
     )
     db.execute("DELETE FROM oauth_states WHERE state = ?", (state,))
     db.commit()
-    return redirect("http://127.0.0.1:5173?integration=google-calendar")
+    frontend_url = os.environ.get("FRONTEND_URL", "http://127.0.0.1:5173").rstrip("/")
+    return redirect(f"{frontend_url}?integration=google-calendar")
 
 
 @api.post("/integrations/trello/connect")

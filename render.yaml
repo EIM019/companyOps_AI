@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: companyops-ai-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: python -m pip install --upgrade pip setuptools wheel && python -m pip install -r requirements.txt
+    startCommand: gunicorn run:app
+    healthCheckPath: /api/health
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-5.4
+      - key: OPENAI_EMBEDDING_MODEL
+        value: text-embedding-3-small
+      - key: FRONTEND_HOST
+        fromService:
+          name: companyops-ai
+          type: web
+          property: host
+      - key: FRONTEND_URL
+        value: https://companyops-ai.onrender.com
+
+  - type: web
+    name: companyops-ai
+    runtime: static
+    plan: free
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_HOST
+        fromService:
+          name: companyops-ai-api
+          type: web
+          property: host

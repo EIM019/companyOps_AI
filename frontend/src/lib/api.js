@@ -1,4 +1,7 @@
-const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:5000/api";
+const API_HOST = import.meta.env.VITE_API_HOST || "";
+const API_BASE =
+  import.meta.env.VITE_API_BASE ||
+  (API_HOST ? `https://${API_HOST.replace(/^https?:\/\//, "").replace(/\/$/, "")}/api` : "http://127.0.0.1:5000/api");
 
 export function getToken() {
   return localStorage.getItem("companyops_token") || "";
