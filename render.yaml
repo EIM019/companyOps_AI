@@ -10,8 +10,6 @@ services:
     envVars:
       - key: SECRET_KEY
         generateValue: true
-      - key: OPENAI_API_KEY
-        sync: false
       - key: OPENAI_MODEL
         value: gpt-5.4
       - key: OPENAI_EMBEDDING_MODEL
